@@ -1,0 +1,10 @@
+{
+  "description": "Showcase an elegant Italian pastry shop in Tunisia with a user-friendly interface for customers to explore menus and a robust admin dashboard for updates.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
