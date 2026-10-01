@@ -7,7 +7,7 @@ const savedTheme = localStorage.getItem('gavroche_theme')
 const preferredTheme =
   savedTheme === 'light' || savedTheme === 'dark'
     ? savedTheme
-    : window.matchMedia('(prefers-color-scheme: light)').matches
+    : window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'light'
       : 'dark'
 

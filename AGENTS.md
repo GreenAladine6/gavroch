@@ -1,5 +1,4 @@
-# figma-make-app
-
+# Gavroch
 React + Vite + Tailwind CSS project running inside Figma Make.
 
 ## Development Server
