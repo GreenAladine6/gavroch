@@ -99,3 +99,12 @@ my-project/
 ├── .env.example
 ├── README.md
 └── LICENSE
+
+
+
+
+
+
+
+
+commande pour connecter au database: "docker exec -it Gavroch_postgres   psql -U postgres -d Gavroch"
