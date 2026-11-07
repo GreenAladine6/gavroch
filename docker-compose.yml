@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: Gavroch_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: YOUR_PASSWORD
+      POSTGRES_DB: Gavroch
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - gavroch_pgdata:/var/lib/postgresql/data
+
+volumes:
+  gavroch_pgdata:
