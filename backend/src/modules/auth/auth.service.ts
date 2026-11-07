@@ -1,9 +1,5 @@
 // src/modules/auth/auth.service.ts
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
@@ -13,47 +9,31 @@ import { RegisterDto } from './dto/register.dto';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
+    private readonly users: UsersService,
+    private readonly jwt: JwtService,
   ) {}
 
   async register(dto: RegisterDto) {
-    const existing = await this.usersService.findByEmail(dto.email);
-    if (existing) throw new ConflictException('Email already in use');
-
-    const hashed = await bcrypt.hash(dto.password, 10);
-    // Public registration always creates a CUSTOMER, never an ADMIN
-    const user = await this.usersService.create({
-      email: dto.email,
-      password: hashed,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-    });
-
+    const user = await this.users.registerCustomer(dto); // always CUSTOMER
     return this.buildAuthResponse(user);
   }
 
   async login(dto: LoginDto) {
-    const user = await this.usersService.findByEmail(dto.email);
+    const user = await this.users.findAuthByEmail(dto.email);
+    const valid =
+      !!user && !user.deletedAt && (await bcrypt.compare(dto.password, user.password));
+    if (!valid) throw new UnauthorizedException('Invalid credentials');
 
-    // Same error for "no user" and "wrong password": don't leak which one failed
-    if (!user || !(await bcrypt.compare(dto.password, user.password))) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    return this.buildAuthResponse(user);
+    const { password, deletedAt, ...safe } = user;
+    return this.buildAuthResponse(safe);
   }
 
   private buildAuthResponse(user: {
-    id: number;
-    email: string;
-    role: string;
-    firstName: string;
-    lastName: string;
+    id: number; email: string; role: string; firstName: string; lastName: string;
   }) {
     const payload = { sub: user.id, email: user.email, role: user.role };
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken: this.jwt.sign(payload),
       user: {
         id: user.id,
         email: user.email,

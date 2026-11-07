@@ -8,8 +8,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
-  );
+  new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true, // required for @Type(() => Number) on query params
+  }),
+);
   const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
   app.enableCors({ origin: FRONTEND_URL || '*', credentials: true });
 
